@@ -1,9 +1,13 @@
 import './App.css';
 import React from 'react';
-import { createRef, forwardRef, useState } from 'react';
 import { keyframes } from 'styled-components';
-import { useEffect } from 'react';
 import styled from 'styled-components';
+
+import cloudySnowing from './icons/cloudy_snowing.svg';
+import nightStay from './icons/night_stay.svg';
+import rainy from './icons/rainy.svg';
+import sunny from './icons/sunny.svg';
+import thunderstorm from './icons/thunderstorm.svg';
 
 
 let animationWipes = (wipeFrom, wipeTo) => keyframes`
@@ -21,38 +25,56 @@ function Cell(props) {
   return (
     <li className={props.selected? "selected" : ""} onClick={props.onclick}>
       <div>
-        {props.time}
+        <div className='cell-content'>
+          <h3 className='time'>
+            {props.time}
+          </h3>
+          <div className='weather'>
+            <h3>
+              {props.temperature.toFixed(2)}
+              <sup>{props.unit}</sup>
+            </h3>
+            {props.weather}
+          </div>
+        </div>
       </div>
     </li>
   );
 }
 
-
-function Temperature(props) {
-  let prevTemp  = Math.round(props.prevTemp);
-  let wipeFrom = (Math.min(Math.max(prevTemp, -35), 35) + 35) / 70;
-  let temp = Math.round(props.temperature);
-  let wipeTo = (Math.min(Math.max(temp, -35), 35) + 35) / 70;
-
+function Weather(props) {
   return (
     <div>
       <div className='icon outer'>
-        <svg viewBox='0 0 100 100' className='circle center'>
-          <defs>
-            <linearGradient id='linear' x1='0%' y1='0%' x2='100%' y2='100%'>
-              <stop offset='0%' stopColor='#ff0059'/>
-              <stop offset='100%' stopColor='#4346df'/>
-            </linearGradient>
-          </defs>
-          <Circle cx='50' cy='50' r='40' stroke='url(#linear)' 
-            wipeFrom={wipeFrom} wipeTo={wipeTo}/>
-        </svg>
-        <div className='icon inner center'>
-          <div className='temperature center'>
-            <h2>
-              {temp}<sup>{props.unit}</sup>
-            </h2>
-          </div>
+    
+      </div>
+    </div>
+  );
+}
+
+function Temperature(props) {
+  let prevTemp  = Math.round(props.prevTemp);
+  let wipeFrom = (Math.min(Math.max(prevTemp, -15), 35) + 15) / 50;
+  let temp = Math.round(props.temperature);
+  let wipeTo = (Math.min(Math.max(temp, -15), 35) + 15) / 50;
+
+  return (
+    <div className='icon outer'>
+      <svg viewBox='0 0 100 100' className='circle center'>
+        <defs>
+          <linearGradient id='linear' x1='0%' y1='0%' x2='100%' y2='100%'>
+            <stop offset='0%' stopColor='#ff0059'/>
+            <stop offset='100%' stopColor='#4346df'/>
+          </linearGradient>
+        </defs>
+        <Circle cx='50' cy='50' r='40' stroke='url(#linear)' 
+          wipeFrom={wipeFrom} wipeTo={wipeTo}/>
+      </svg>
+      <div className='icon inner center'>
+        <div className='temperature center'>
+          <h2>
+            {temp}<sup>{props.unit}</sup>
+          </h2>
         </div>
       </div>
     </div>
@@ -80,6 +102,13 @@ class App extends React.Component {
       selectedIdx: this.state.date.getHours()
     })
   }
+  
+  incrementDate(days) {
+    let newDate = new Date(this.state.date);
+    newDate.setDate(newDate.getDate() + days);
+
+    this.update(newDate);
+  }
 
   updateIdx(idx) {
     if (this.state.data != null) {
@@ -89,7 +118,6 @@ class App extends React.Component {
       this.setState({
         selectedIdx: idx
       })
-      console.log(this.state.prevTemp + "," + this.state.selectedIdx)
     } else {
       this.setState({
         prevTemp: 45,
@@ -99,6 +127,13 @@ class App extends React.Component {
   }
   update(date) {
     try {
+      if (this.state.data != null) {
+        this.setState({
+          prevTemp: this.state.data.hourly.temperature_2m[this.state.selectedIdx]
+        })
+      }
+
+
       let currentTime = date.toISOString().substring(0, 14) + "00";
       fetch('https://api.open-meteo.com/v1/forecast?' 
         + new URLSearchParams({
@@ -124,15 +159,37 @@ class App extends React.Component {
       "July", "August", "September", "October", "November", "December"
     ];
 
-    let dateString = `${days[this.state.date.getDay()]}, ${this.state.date.getDate()} ${months[this.state.date.getMonth() - 1]} ${this.state.date.getFullYear()}`;
+    let dateString = `${days[this.state.date.getDay()]}, ${this.state.date.getDate()} ${months[this.state.date.getMonth()]} ${this.state.date.getFullYear()}`;
     
     let cells = []
     if (this.state.data != null) {
+      console.log(this.state.data)
       for (let i=0; i<24; i++) {
+        let icon = null;
+        let alt = "";
+        let weathercode = this.state.data.hourly.weathercode[i];
+
+        if (weathercode < 50) {
+          icon = sunny;
+          alt = "sunny";
+        } else if (weathercode < 71) {
+          icon = rainy;
+          alt = "rainy";
+        } else if (weathercode < 85){
+          icon = cloudySnowing;
+          alt = "snowing";
+        } else {
+          icon = thunderstorm;
+          alt = "thunderstorm";
+        }
+
+        let weatherIcon = (<img src={icon} alt={alt}/>);
+
         cells.push(<Cell 
           key={i}
           selected={(this.state.selectedIdx === i)} 
-          time={this.state.data.hourly.time[i].substring(11, 16)}
+          time={this.state.data.hourly.time[i].substring(11, 16)} temperature={this.state.data.hourly.temperature_2m[i]}
+          unit={this.state.data.hourly_units.temperature_2m} weather={weatherIcon}
           onclick={() => this.updateIdx(i)}
         />);
       }
@@ -141,124 +198,35 @@ class App extends React.Component {
     return(
       <>
         <h1>{this.state.location}</h1>
-        <div className='card center'>
+        <div className='card'>
           <div className='date'>
-            <div className='button'>
-              <img src='./arrow_back.svg' style={{transform: 'translateX(15%)'}}/>
+            <div className='button' onClick={() => this.incrementDate(-1)}>
+              <img src='./arrow_back.svg' style={{transform: 'translateX(15%)'}} alt='back arrow'/>
             </div>
             <div className='date-text'><h2>{dateString}</h2></div>
-            <div className='button'>
-              <img src='./arrow_forward.svg'/>
+            <div className='button' onClick={() => this.incrementDate(1)}>
+              <img src='./arrow_forward.svg' alt='forward arrow'/>
             </div>
           </div>
           
           <main>
-            <Temperature 
-              prevTemp={this.state.prevTemp}
-              temperature={(this.state.data === null)? 0 : this.state.data.hourly.temperature_2m[this.state.selectedIdx]}
-              unit={(this.state.data === null)? "°C" : this.state.data.hourly_units.temperature_2m}
-            />
+            <div className='icon-container'>
+              <Temperature 
+                prevTemp={this.state.prevTemp}
+                temperature={(this.state.data === null)? 0 : this.state.data.hourly.temperature_2m[this.state.selectedIdx]}
+                unit={(this.state.data === null)? "°C" : this.state.data.hourly_units.temperature_2m}
+              />
+              <Weather icon={(this.state.data === null)? "" : this.state.data.hourly.weathercode[this.state.selectedIdx]}/>
+            </div>
+            
             <ul>
               {cells}
             </ul>
           </main>
-            
         </div>
       </>
     );
   }
 }
-
-/*function App() {
-  let [temperature, setTemperature] = useState(0);
-  let [date, setDate] = useState("");
-  let [location, setLocation] = useState('Berlin');
-  let [unit, setUnit] = useState('°C');
-  let [data, setData] = useState(null);
-  let [hourly, setHourly] = useState([]);
-
-  let currentTime = new Date().toISOString().substring(0, 14) + "00";
-
-  useEffect(() => {
-
-    // Fetching from API
-    try {
-      fetch('https://api.open-meteo.com/v1/forecast?' 
-        + new URLSearchParams({
-          latitude:52.52,
-          longitude: 13.41,
-          start_date: currentTime.substring(0, 10),
-          end_date: currentTime.substring(0, 10)
-        }) 
-        + '&hourly=temperature_2m,weathercode'
-      ).then((res) => res.json()).then((raw) => {
-        setData(raw.hourly);
-        let times = raw.hourly.time;
-        let idx = 0;
-
-
-        let list = [];
-        for (let i=0; i<times.length; i++) {
-          let temp = 0;
-          if (data != null) {
-            temp = data.temperature_2m[i];
-          }
-          if (times[i] === currentTime) {
-            idx = i;
-            list.push(<Cell key={i} selected={true} temperature={temp}
-              time={times[i].substring(11, times[i].length)}/>);
-          } else {
-            list.push(<Cell key={i} selected={false} temperature={temp}
-              time={times[i].substring(11, times[i].length)}/>);
-          }
-        }
-        setHourly(list);
-        let temp = Math.round(raw.hourly.temperature_2m[idx]);
-        setTemperature(temp);
-        setUnit(raw.hourly_units.temperature_2m);
-
-      });
-    } catch (e) {
-      console.log(e);
-    }
-
-
-    let currentDate = new Date();
-    let dateString = "";
-    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const months = ["null", "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ];
-
-    dateString += `${days[currentDate.getDay()]}, ${currentDate.getDate()} ${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
-
-    setDate(dateString);
-  });
-
-  return (
-    <>
-      <h1>{location}</h1>
-      <div className='card center'>
-        <div className='date'>
-          <div className='button'>
-            <img src='./arrow_back.svg' style={{transform: 'translateX(15%)'}}/>
-          </div>
-          <div className='date-text'><h2>{date}</h2></div>
-          <div className='button'>
-            <img src='./arrow_forward.svg'/>
-          </div>
-        </div>
-        
-        <main>
-          <Temperature temperature={temperature} unit={unit}/>
-          <ul>
-            {hourly}
-          </ul>
-        </main>
-          
-      </div>
-    </>
-  );
-}*/
 
 export default App;

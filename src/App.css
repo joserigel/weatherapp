@@ -2,7 +2,6 @@
 
 
 html {
-  height: 100%;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -16,7 +15,9 @@ body {
 
 h1 {
   text-align: center;
-  margin: 30px;
+  padding: 0;
+  margin: 0;
+  margin-top: 15px;
   font-size: 64px;
   background: linear-gradient(90deg, rgb(53, 153, 224)40%, rgb(159, 19, 224)60%);
   background-clip: text;
@@ -30,13 +31,17 @@ h1 {
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
 .card {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  width: calc(70% - 5px);
-  height: calc(65% - 5px);
-  margin: 5px;
+  width: 500px;
+  max-width: 90vw;
+  height: calc(70vh - 5px);
   background: linear-gradient(15deg, rgb(193, 192, 204), rgb(206, 202, 202));
   backdrop-filter: blur(1px) brightness(95%);
   border-radius: 30px;
@@ -49,22 +54,30 @@ h1 {
 }
 
 .outer {
-  height: 20vw;
-  width: 20vw;
-  margin: 20px;
+  height: 130px;
+  width: 130px;
+  margin: 5px;
   filter: drop-shadow(5px 5px 5px rgb(81, 87, 87)) drop-shadow(-5px -5px 5px rgb(213, 217, 221));
 }
 
 .inner {
-  height: 16vw;
-  width: 16vw;
+  height: 100px;
+  width: 100px;
   background: linear-gradient(15deg, rgb(193, 192, 204), rgb(206, 202, 202));
   filter: drop-shadow(5px 5px 5px rgba(77, 85, 169, 0.427)) drop-shadow(-5px -5px 5px rgba(213, 217, 221, 0.225));
 }
 
+.icon-container {
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .circle {
-  height: 18vw;
-  width: 18vw;
+  height: 118px;
+  width: 118px;
   transform: rotate(-90deg) translate(-50%, -50%s);
   box-shadow: inset 5px 5px 5px 0 rgb(167, 166, 172), inset -5px -5px 5px 0 rgb(236, 239, 243);
   border-radius: 50%;
@@ -108,15 +121,14 @@ h1 {
 }
 
 .date-text {
+  width: 300px;
   display: flex;
   justify-content: center;
   align-items: center;
   vertical-align: middle;
   border-radius: 20px;
-  background: radial-gradient(at 40% 80%, rgb(201, 198, 237), rgb(131, 154, 165));
   background: linear-gradient(15deg, rgb(193, 192, 204), rgb(206, 202, 202));
   filter: drop-shadow(5px 5px 5px rgba(100, 103, 132, 0.427)) drop-shadow(-5px -5px 5px rgba(241, 243, 245, 0.442));
-
 }
 
 .date h2 {
@@ -143,6 +155,10 @@ h1 {
 
 .button:hover {
   background: linear-gradient(15deg, rgb(188, 187, 194), rgb(170, 164, 164));
+}
+
+.button:active {
+  background: linear-gradient(15deg, rgb(126, 126, 129), rgb(79, 76, 76));
 }
 
 .button img {
@@ -195,13 +211,59 @@ main li:hover {
 }
 
 main li > div {
+  display: flex;
+  justify-content: center;
   box-sizing: border-box;
-  padding: 5px;
   height: 100%;
+  width: 100%;
   border-radius: 10px;
   background: linear-gradient(15deg, rgb(157, 0, 255), rgb(15, 6, 111));
 }
 
 main li.selected{
   border: 2px solid rgb(31, 26, 87);
+}
+.cell-content {
+  width: 100%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.cell-content .time {
+  width: 50px;
+  margin: 5px;
+  padding: 0;
+}
+
+.weather {
+  width: 100%;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+}
+
+.weather > * {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.weather h3{
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.weather sup {
+  vertical-align: top;
+  position: relative;
+  font-size: 12px;
+}
+
+.weather img{
+  top: 0;
+  height: 32px;
+  filter: invert(100%);
 }
