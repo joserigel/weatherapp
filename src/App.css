@@ -111,6 +111,32 @@ h1 {
   font-weight: 400;
 }
 
+.weather-gauge img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 80px;
+  transform: translate(-50%, -50%);
+  animation: 3s infinite alternate-reverse bobble;
+}
+
+@keyframes bobble {
+  0% {
+    transform: translate(-50%, -50%);
+  }
+  25% {
+    transform: translate(-50%, -53%) rotate(-3deg);
+  }
+  50% {
+    transform: translate(-50%, -55%) rotate(3eg);
+  }
+  75% {
+    transform: translate(-50%, -53%) rotate(-3deg);
+  }
+  100% {
+    transform: translate(-50%, -50%);
+  }
+}
 
 .date {
   position: relative;
@@ -150,7 +176,7 @@ h1 {
   border-radius: 50%;
   background: linear-gradient(15deg, rgb(193, 192, 204), rgb(206, 202, 202));
   filter: drop-shadow(5px 5px 5px rgba(100, 103, 132, 0.427)) drop-shadow(-5px -5px 5px rgba(241, 243, 245, 0.442));
-  transition-duration: 0.2s;
+  transition-duration: 0.5s;
 }
 
 .button:hover {
@@ -179,11 +205,13 @@ main ul {
   list-style: none;
   overflow: scroll;
   padding: 0;
-  padding-right: 15px;
+  margin-left: 10px;
+  margin-right: 15px;
   width: 100%;
-  mask: linear-gradient(transparent 0%, white 4%, white 96%, transparent);
-  -webkit-mask: linear-gradient(transparent 0%, white 4%, white 96%, transparent);
   scroll-behavior: smooth;
+  box-shadow: inset 5px 5px 5px 0px rgba(101, 101, 101, 0.8);
+  border-radius: 20px;
+  background: linear-gradient(to bottom, rgb(206, 204, 204), rgb(232, 230, 230));
 }
 
 main ul::-webkit-scrollbar {
@@ -199,7 +227,6 @@ main li {
   margin: 5px;
   padding: 5px;
   border-radius: 15px;
-  filter: drop-shadow(5px 5px 5px rgb(58, 33, 86));
   border: 2px solid transparent;
   transition-duration: 0.3s;
 }
@@ -217,7 +244,21 @@ main li > div {
   height: 100%;
   width: 100%;
   border-radius: 10px;
+}
+
+.day {
+  color: black;
+  background: linear-gradient(15deg, rgb(136, 241, 255), rgb(8, 148, 255));
+  filter: drop-shadow(5px 5px 5px rgb(101, 116, 118));
+}
+
+.night {
   background: linear-gradient(15deg, rgb(157, 0, 255), rgb(15, 6, 111));
+  filter: drop-shadow(5px 5px 5px rgb(58, 33, 86));
+}
+
+.night img {
+  filter: invert(100%);
 }
 
 main li.selected{
@@ -265,5 +306,4 @@ main li.selected{
 .weather img{
   top: 0;
   height: 32px;
-  filter: invert(100%);
 }

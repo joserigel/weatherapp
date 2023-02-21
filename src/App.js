@@ -24,7 +24,7 @@ let Circle = styled.circle`
 function Cell(props) {
   return (
     <li className={props.selected? "selected" : ""} onClick={props.onclick}>
-      <div>
+      <div className={props.day? "day" : "night"}>
         <div className='cell-content'>
           <h3 className='time'>
             {props.time}
@@ -45,8 +45,8 @@ function Cell(props) {
 function Weather(props) {
   return (
     <div>
-      <div className='icon outer'>
-    
+      <div className='icon outer weather-gauge'>
+        {props.icon}
       </div>
     </div>
   );
@@ -91,6 +91,7 @@ class App extends React.Component {
       location: 'Berlin',
       date: currentDate,
       data: null,
+      cellRefs: null,
       selectedIdx: 0,
       prevTemp: -45,
     }
@@ -142,7 +143,7 @@ class App extends React.Component {
           start_date: currentTime.substring(0, 10),
           end_date: currentTime.substring(0, 10)
         }) 
-        + '&hourly=temperature_2m,weathercode'
+        + '&hourly=temperature_2m,weathercode&daily=sunrise,sunset&timezone=auto  '
       ).then((res) => res.json()).then((data) => {
         this.setState({
           date: date,
@@ -162,16 +163,27 @@ class App extends React.Component {
     let dateString = `${days[this.state.date.getDay()]}, ${this.state.date.getDate()} ${months[this.state.date.getMonth()]} ${this.state.date.getFullYear()}`;
     
     let cells = []
+    let currentWeather = null;
     if (this.state.data != null) {
-      console.log(this.state.data)
+      let sunrise = this.state.data.daily.sunrise[0];
+      let sunset = this.state.data.daily.sunset[0];
       for (let i=0; i<24; i++) {
         let icon = null;
         let alt = "";
         let weathercode = this.state.data.hourly.weathercode[i];
 
+        
+        let time = this.state.data.hourly.time[i];
+        let day = (time >= sunrise && time <= sunset);
+
         if (weathercode < 50) {
-          icon = sunny;
-          alt = "sunny";
+          if (day) {  
+            icon = sunny;
+            alt = "sunny";
+          } else {
+            icon = nightStay;
+            alt = "calm night";
+          }
         } else if (weathercode < 71) {
           icon = rainy;
           alt = "rainy";
@@ -185,11 +197,15 @@ class App extends React.Component {
 
         let weatherIcon = (<img src={icon} alt={alt}/>);
 
+        if (this.state.selectedIdx === i) {
+          currentWeather = weatherIcon;
+        }
+
         cells.push(<Cell 
           key={i}
           selected={(this.state.selectedIdx === i)} 
-          time={this.state.data.hourly.time[i].substring(11, 16)} temperature={this.state.data.hourly.temperature_2m[i]}
-          unit={this.state.data.hourly_units.temperature_2m} weather={weatherIcon}
+          time={time.substring(11, 16)} temperature={this.state.data.hourly.temperature_2m[i]}
+          unit={this.state.data.hourly_units.temperature_2m} weather={weatherIcon} day={day}
           onclick={() => this.updateIdx(i)}
         />);
       }
@@ -216,7 +232,7 @@ class App extends React.Component {
                 temperature={(this.state.data === null)? 0 : this.state.data.hourly.temperature_2m[this.state.selectedIdx]}
                 unit={(this.state.data === null)? "°C" : this.state.data.hourly_units.temperature_2m}
               />
-              <Weather icon={(this.state.data === null)? "" : this.state.data.hourly.weathercode[this.state.selectedIdx]}/>
+              <Weather icon={currentWeather}/>
             </div>
             
             <ul>
