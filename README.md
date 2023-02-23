@@ -1,13 +1,6 @@
-# Sleek Weather App
+# Getting Started with Create React App
 
-This weather app is for my personal portfolio and to train my frontend skills
-
-<u>Technologies it uses:</u>
-- React for the Frontend
-- [Open-Meteo](https://open-meteo.com/) for the Weather API
-- Express for the Backend
-- MySQL for searching the cities and coordinates
-- Docker for containerization of the app
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
 

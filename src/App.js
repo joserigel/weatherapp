@@ -1,5 +1,5 @@
 import './App.css';
-import React, { createRef } from 'react';
+import React from 'react';
 import { keyframes } from 'styled-components';
 import styled from 'styled-components';
 
@@ -21,10 +21,9 @@ let Circle = styled.circle`
   animation-fill-mode: forwards;
 `;
 
-const Cell = React.forwardRef((props, ref) => {
+function Cell(props) {
   return (
-    <li className={props.selected? "selected" : ""} onClick={props.onclick} 
-      ref={ref}>
+    <li className={props.selected? "selected" : ""} onClick={props.onclick}>
       <div className={props.day? "day" : "night"}>
         <div className='cell-content'>
           <h3 className='time'>
@@ -41,7 +40,7 @@ const Cell = React.forwardRef((props, ref) => {
       </div>
     </li>
   );
-});
+}
 
 function Weather(props) {
   return (
@@ -88,16 +87,11 @@ class App extends React.Component {
 
     let currentDate = new Date();
 
-    let refs = [];
-    for (let i=0; i<24; i++) {
-      refs.push(createRef());
-    }
-
     this.state = {
       location: 'Berlin',
       date: currentDate,
       data: null,
-      cellRefs: refs,
+      cellRefs: null,
       selectedIdx: 0,
       prevTemp: -45,
     }
@@ -108,13 +102,6 @@ class App extends React.Component {
     this.setState({
       selectedIdx: this.state.date.getHours()
     })
-  }
-
-  componentDidUpdate() {
-    let scrollRef = this.state.cellRefs[this.state.selectedIdx];
-    if (scrollRef.current != null) {
-      scrollRef.current.scrollIntoView({block: "center", inline: "center"});
-    }
   }
   
   incrementDate(days) {
@@ -147,6 +134,7 @@ class App extends React.Component {
         })
       }
 
+
       let currentTime = date.toISOString().substring(0, 14) + "00";
       fetch('https://api.open-meteo.com/v1/forecast?' 
         + new URLSearchParams({
@@ -161,18 +149,6 @@ class App extends React.Component {
           date: date,
           data: data
         });
-        
-        
-        let currentDate = new Date();
-        if (date.getDate() !== currentDate.getDate() || date.getMonth() !== currentDate.getMonth() || date.getFullYear() !== currentDate.getFullYear()) {
-          this.setState({
-            selectedIdx: 0
-          })
-        } else {
-          this.setState({
-            selectedIdx: currentDate.getHours()
-          })
-        }
       });
     } catch (e) {
       console.log(e);
@@ -191,7 +167,6 @@ class App extends React.Component {
     if (this.state.data != null) {
       let sunrise = this.state.data.daily.sunrise[0];
       let sunset = this.state.data.daily.sunset[0];
-
       for (let i=0; i<24; i++) {
         let icon = null;
         let alt = "";
@@ -226,16 +201,14 @@ class App extends React.Component {
           currentWeather = weatherIcon;
         }
 
-
         cells.push(<Cell 
-          key={i} ref={this.state.cellRefs[i]}
+          key={i}
           selected={(this.state.selectedIdx === i)} 
           time={time.substring(11, 16)} temperature={this.state.data.hourly.temperature_2m[i]}
           unit={this.state.data.hourly_units.temperature_2m} weather={weatherIcon} day={day}
           onclick={() => this.updateIdx(i)}
         />);
       }
-
     }
 
     return(
