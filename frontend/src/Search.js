@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 function Suggestions(props) {
   let navigate = useNavigate();
   function setLocation(index) {
+    // Set search params based on the selected search suggestion
     navigate({
       pathname: '/',
       search: new URLSearchParams({
@@ -14,10 +15,12 @@ function Suggestions(props) {
         longitude: props.search[index]['longitude'],
       }).toString(),
     });
+
+    // Reloads page to update the location data based on search suggestion
     navigate(0);
   }
 
-
+  // Initialize list of search suggestion
   let list = [];
   for (let i=0; i<props.search.length; i++) {
     list.push(<li key={i} onClick={() => setLocation(i)}
@@ -30,8 +33,11 @@ function Suggestions(props) {
   )    
 }
 
-export default function Search () {
+export default function Search() {
   let [suggestion, setSuggestions] = useState([]);
+
+  // event handler to fetch suggestions based on the text typed on
+  // the search bar
   async function changeHandler(e) {
     let s = e.target.value;
     if (s.length > 0) {
