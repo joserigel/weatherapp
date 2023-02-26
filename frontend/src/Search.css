@@ -1,0 +1,82 @@
+.search-bar {
+    margin-top: 10px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    border-radius: 50px;
+    padding: 5px;
+    box-shadow: inset 2px 2px 3px 2px rgba(128, 118, 118, 0.872),
+        inset -2px -2px 3px 2px rgb(226, 228, 231);
+}
+
+.search-bar input {
+    font-family: 'Comfortaa';
+    height: 40px;
+    width: 260px;
+    padding-left: 15px;
+    font-size: 18px;
+    border: none;
+    outline: none;
+    background: transparent;
+}
+
+.search-bar img {
+    height: 30px;
+    filter: invert(100%);
+}
+
+.suggestions {
+    width: 270px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+}
+
+.suggestions > ul {
+    list-style: none;
+    padding: 3px;
+    margin: 0;
+    height: fit-content;
+    filter: drop-shadow(5px 5px 5px rgba(97, 98, 113, 0.689))
+}
+
+.suggestions li {
+    margin: 0px;
+    padding: 5px;
+    border-top: 1px solid rgb(163, 162, 162);
+    border-bottom: 1px solid rgb(186, 184, 184);
+    background: linear-gradient(-45deg, 
+        #e8e4e4, #f2f8f7);
+    cursor: default;
+}
+
+.suggestions li:hover {
+    background: linear-gradient(-45deg,
+        #9f9a9a, #b7bcbc);
+}
+
+.suggestions li:active {
+    background: linear-gradient(-45deg,
+        #757272, #848686);
+}
+
+.suggestions li:first-child {
+    border-top: none;
+    border-radius: 10px 10px 0 0;
+}
+
+.suggestions li:last-child {
+    border-bottom: none;
+    border-radius: 0 0 10px 10px;
+}
+
+.suggestions li:only-child {
+    border: none;
+    border-radius: 10px;
+}
+
