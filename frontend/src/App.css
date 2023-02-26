@@ -16,9 +16,10 @@ body {
 h1 {
   text-align: center;
   padding: 0;
+  padding-bottom: 5px;
   margin: 0;
   margin-top: 15px;
-  font-size: 64px;
+  font-size: 32px;
   background: linear-gradient(90deg, rgb(53, 153, 224)40%, rgb(159, 19, 224)60%);
   background-clip: text;
   -webkit-background-clip: text;

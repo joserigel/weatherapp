@@ -1,7 +1,10 @@
 import './App.css';
-import React, { createRef } from 'react';
+import React, { createRef, useEffect } from 'react';
 import { keyframes } from 'styled-components';
 import styled from 'styled-components';
+import { useSearchParams } from 'react-router-dom';
+
+import Search from './Search';
 
 import cloudySnowing from './icons/cloudy_snowing.svg';
 import nightStay from './icons/night_stay.svg';
@@ -93,8 +96,27 @@ class App extends React.Component {
       refs.push(createRef());
     }
 
+    let search = new URLSearchParams(window.location.search);
+    let lat, long, city;
+    for (let value of search.entries()) {
+        switch (value[0]) {
+          case 'city':
+            city = value[1];
+            break;
+          case 'latitude':
+            lat = parseFloat(value[1]);
+            break;
+          case 'longitude':
+            long = parseFloat(value[1]);
+            break;
+        }
+    }
+    let flag = (!isNaN(long) && !isNaN(lat) && city != null)
+
     this.state = {
-      location: 'Berlin',
+      location: flag? city : 'Berlin',
+      latitude: flag? lat: 52.52,
+      longitude: flag? long: 13.41,
       date: currentDate,
       data: null,
       cellRefs: refs,
@@ -121,7 +143,10 @@ class App extends React.Component {
     let newDate = new Date(this.state.date);
     newDate.setDate(newDate.getDate() + days);
 
-    this.update(newDate);
+    let difference = Math.ceil((newDate - new Date()) / (1000 * 3600 * 24));
+    if (difference <= 7) {
+      this.update(newDate);
+    }
   }
 
   updateIdx(idx) {
@@ -146,12 +171,11 @@ class App extends React.Component {
           prevTemp: this.state.data.hourly.temperature_2m[this.state.selectedIdx]
         })
       }
-
       let currentTime = date.toISOString().substring(0, 14) + "00";
       fetch('https://api.open-meteo.com/v1/forecast?' 
         + new URLSearchParams({
-          latitude:52.52,
-          longitude: 13.41,
+          latitude: this.state.latitude,
+          longitude: this.state.longitude,
           start_date: currentTime.substring(0, 10),
           end_date: currentTime.substring(0, 10)
         }) 
@@ -226,7 +250,6 @@ class App extends React.Component {
           currentWeather = weatherIcon;
         }
 
-
         cells.push(<Cell 
           key={i} ref={this.state.cellRefs[i]}
           selected={(this.state.selectedIdx === i)} 
@@ -235,11 +258,13 @@ class App extends React.Component {
           onclick={() => this.updateIdx(i)}
         />);
       }
-
     }
+
+    let difference = Math.ceil((this.state.date - new Date()) / (1000 * 3600 * 24));
 
     return(
       <>
+        <Search/>
         <h1>{this.state.location}</h1>
         <div className='card'>
           <div className='date'>
@@ -247,7 +272,7 @@ class App extends React.Component {
               <img src='./arrow_back.svg' style={{transform: 'translateX(15%)'}} alt='back arrow'/>
             </div>
             <div className='date-text'><h2>{dateString}</h2></div>
-            <div className='button' onClick={() => this.incrementDate(1)}>
+            <div className='button' onClick={() => this.incrementDate(1)} style={{opacity: (difference < 7)? 1 : 0}}>
               <img src='./arrow_forward.svg' alt='forward arrow'/>
             </div>
           </div>
