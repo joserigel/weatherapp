@@ -1,11 +1,8 @@
+/* import font from googlefonts */
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400&display=swap');
 
-
+/* setting of global styles */
 html {
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
   background: linear-gradient(15deg, rgb(193, 192, 204), rgb(206, 202, 202));
 }
 
@@ -13,12 +10,14 @@ body {
   font-family: 'Comfortaa';
 }
 
+/* Main title*/
 h1 {
   text-align: center;
   padding: 0;
+  padding-bottom: 5px;
   margin: 0;
   margin-top: 15px;
-  font-size: 64px;
+  font-size: 32px;
   background: linear-gradient(90deg, rgb(53, 153, 224)40%, rgb(159, 19, 224)60%);
   background-clip: text;
   -webkit-background-clip: text;
@@ -32,6 +31,7 @@ h1 {
   transform: translate(-50%, -50%);
 }
 
+/* Main card with all data and date*/
 .card {
   position: fixed;
   left: 50%;
