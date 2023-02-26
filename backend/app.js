@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+// Set up MySQL Connection
 const mysql = require('mysql');
 const connection = mysql.createConnection({
     host: process.env.HOST,
@@ -10,20 +11,26 @@ const connection = mysql.createConnection({
 });
 connection.connect();
 
+// CORS Option and Express initialization
 const cors =  require('cors');
 const express = require('express');
 const app = express();
-const port = 8393;
+const port = process.env.PORT;
 
 const corsOptions = {
     origin: 'http://localhost:3000',
     optionsSuccessStatus: 200
 }
 
+
+// GET middleware to fetch search suggestions 
+// and serve coordinates
 app.get('/', cors(corsOptions), (req, res) => {
+    // SQL Query to get country, city, latitude and longitutde (first 5)
     let query = mysql.format("SELECT country, city, latitude, longitude FROM location WHERE city LIKE CONCAT('%', ?, '%') LIMIT 5;", 
         [req.query.s == null? "" : req.query.s]);
     
+    // Sending data fetched by MySQL Query as JSON
     connection.query(query, (err, rows, fields) => {
         if (err) {
             res.statusCode = 502;
@@ -34,13 +41,14 @@ app.get('/', cors(corsOptions), (req, res) => {
     })
 });
 
+// Starting up of App on designated port
 app.listen(port, () => {
     console.log("listening!");
-    
 })
+
+// Exit cleanup to close MySQL Connection 
 function exitHandler() {
     connection.end();
     process.exit();
 }
-
 process.on('SIGINT', exitHandler.bind(null));
