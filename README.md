@@ -1,5 +1,6 @@
 # Sleek Weather App
 
+![Preview of Live Site](resource/preview_screenshot.png)
 This weather app is for my personal portfolio and to train my frontend skills
 
 <u>Technologies it uses:</u>
