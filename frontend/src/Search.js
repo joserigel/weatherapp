@@ -41,7 +41,7 @@ export default function Search() {
   async function changeHandler(e) {
     let s = e.target.value;
     if (s.length > 0) {
-      let res = await axios.get('http://localhost:8393/', {params: {s: s}});
+      let res = await axios.get('/suggestions', {params: {s: s}});
       setSuggestions(res.data);
     } else {
       setSuggestions([]);
