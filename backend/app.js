@@ -2,12 +2,17 @@ require('dotenv').config();
 
 // Set up MySQL Connection
 const mysql = require('mysql');
+const fs = require('fs');
+const PORT = 8393;
 const connection = mysql.createConnection({
     host: process.env.HOST,
     user: process.env.USER,
     password: process.env.PASSWORD,
     database: process.env.DATABASE,
-    
+    port: 3306,
+    ssl : {
+        ca: fs.readFileSync( __dirname + '/DigiCertGlobalRootCA.crt.pem', 'utf-8'),
+    }
 });
 connection.connect();
 
@@ -15,7 +20,6 @@ connection.connect();
 const cors =  require('cors');
 const express = require('express');
 const app = express();
-const port = process.env.PORT;
 
 const corsOptions = {
     origin: 'http://localhost:3000',
@@ -25,7 +29,7 @@ const corsOptions = {
 
 // GET middleware to fetch search suggestions 
 // and serve coordinates
-app.get('/', cors(corsOptions), (req, res) => {
+app.get('/suggestions', cors(corsOptions), (req, res) => {
     // SQL Query to get country, city, latitude and longitutde (first 5)
     let query = mysql.format("SELECT country, city, latitude, longitude FROM location WHERE city LIKE CONCAT('%', ?, '%') LIMIT 5;", 
         [req.query.s == null? "" : req.query.s]);
@@ -42,7 +46,7 @@ app.get('/', cors(corsOptions), (req, res) => {
 });
 
 // Starting up of App on designated port
-app.listen(port, () => {
+app.listen(PORT, () => {
     console.log("listening!");
 })
 
