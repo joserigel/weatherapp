@@ -1,6 +1,7 @@
 # Sleek Weather App
 
 ![Preview of Live Site](resource/preview_screenshot.png)
+
 This weather app is for my personal portfolio and to train my frontend skills
 
 <u>Technologies it uses:</u>
@@ -9,6 +10,9 @@ This weather app is for my personal portfolio and to train my frontend skills
 - Express for the Backend
 - MySQL for searching the cities and coordinates
 - Docker for containerization of the app
+
+### Credit
+- [bahar](https://github.com/bahar/WorldCityLocations) for the world cities database
 
 ## Available Scripts
 
