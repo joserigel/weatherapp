@@ -1,6 +1,6 @@
 import './Search.css';
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Suggestions(props) {
@@ -34,19 +34,37 @@ function Suggestions(props) {
 }
 
 export default function Search() {
+  let [search, setSearch] = useState("");
   let [suggestion, setSuggestions] = useState([]);
+  let [fetched, setFetched] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (search.length > 0 && !fetched) {
+        setFetched(true);
+        axios.get('/suggestions', {params: {s: search}})
+          .then(res => {
+            setSuggestions(res.data);
+          });
+      } else if (search.length === 0){
+        setSuggestions([]);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  })
 
   // event handler to fetch suggestions based on the text typed on
   // the search bar
-  async function changeHandler(e) {
+  function changeHandler(e) {
     let s = e.target.value;
+    setSearch(s);
     if (s.length > 0) {
-      let res = await axios.get('/suggestions', {params: {s: s}});
-      setSuggestions(res.data);
+      setFetched(false);
     } else {
       setSuggestions([]);
     }
-  } 
+  }
 
   let searchSuggestions = <Suggestions search={suggestion}/>
   return(
