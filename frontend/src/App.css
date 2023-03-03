@@ -1,6 +1,8 @@
 /* import font from googlefonts */
+/* import font from googlefonts */
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400&display=swap');
 
+/* setting of global styles */
 /* setting of global styles */
 html {
   width: 100%;
@@ -15,12 +17,15 @@ body {
 }
 
 /* Main title*/
+/* Main title*/
 h1 {
   text-align: center;
   padding: 0;
   padding-bottom: 5px;
+  padding-bottom: 5px;
   margin: 0;
   margin-top: 15px;
+  font-size: 32px;
   font-size: 32px;
   background: linear-gradient(90deg, rgb(53, 153, 224)40%, rgb(159, 19, 224)60%);
   background-clip: text;
@@ -35,6 +40,7 @@ h1 {
   transform: translate(-50%, -50%);
 }
 
+/* Main card with all data and date*/
 /* Main card with all data and date*/
 .card {
   position: fixed;

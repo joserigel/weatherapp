@@ -78,3 +78,15 @@ export default function Search() {
     </>
   )
 }
+  let searchSuggestions = <Suggestions search={suggestion}/>
+  return(
+    <>
+      <div className='search-bar'>
+        <input type='text' onChange={(e) => changeHandler(e)} placeholder="Search"/>
+      </div>
+      <div className='suggestions'>
+        {searchSuggestions}
+      </div>
+    </>
+  )
+}
