@@ -9,7 +9,8 @@
 /coverage
 
 # production
-/frontend/build
+/frontend
+/build
 docker-compose.yml
 
 # misc

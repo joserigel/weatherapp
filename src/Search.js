@@ -48,7 +48,7 @@ export default function Search() {
         setData(result.data);
       }
     });
-  });
+  }, []);
   
   // event handler to fetch suggestions based on the text typed on
   // the search bar
