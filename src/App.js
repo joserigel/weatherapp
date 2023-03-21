@@ -124,9 +124,8 @@ class App extends React.Component {
           case 'latitude':
             lat = parseFloat(value[1]);
             break;
-          case 'longitude':
+          default :
             long = parseFloat(value[1]);
-            break;
         }
     }
 
