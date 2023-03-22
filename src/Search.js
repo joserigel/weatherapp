@@ -22,7 +22,6 @@ function Suggestions(props) {
 
   // Initialize list of search suggestion
   let list = [];
-  console.log(props.search);
   for (let i=0; i<Math.min(props.search.length, 5); i++) {
     list.push(<li key={i} onClick={() => setLocation(i)}
     >{props.search[i]['display_name']}</li>)
