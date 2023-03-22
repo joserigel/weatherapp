@@ -1,8 +1,7 @@
 import './Search.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Papa from 'papaparse';
-
+import axios from 'axios';
 
 function Suggestions(props) {
   let navigate = useNavigate();
@@ -11,9 +10,9 @@ function Suggestions(props) {
     navigate({
       pathname: '/',
       search: new URLSearchParams({
-        city: props.search[index][2],
-        latitude: props.search[index][3],
-        longitude: props.search[index][4],
+        city: props.search[index]['display_name'].split(',')[0],
+        latitude: props.search[index]['boundingbox'][0],
+        longitude: props.search[index]['boundingbox'][2],
       }).toString(),
     });
 
@@ -23,9 +22,10 @@ function Suggestions(props) {
 
   // Initialize list of search suggestion
   let list = [];
-  for (let i=0; i<props.search.length; i++) {
+  console.log(props.search);
+  for (let i=0; i<Math.min(props.search.length, 5); i++) {
     list.push(<li key={i} onClick={() => setLocation(i)}
-    >{props.search[i][2]}, {props.search[i][1]}</li>)
+    >{props.search[i]['display_name']}</li>)
   }
   return (
     <ul>
@@ -35,48 +35,40 @@ function Suggestions(props) {
 }
 
 export default function Search() {
-  const [suggestion, setSuggestions] = useState([]);
-  const [data, setData] = useState(null); 
+  const [fetched, setFetched] = useState(false);
+  const [search, setSearch] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
 
   useEffect(() => {
-    // This is parsing the csv file
-    Papa.parse('./World_Cities_Location_table.csv', {
-      header: false,
-      download: true,
-      complete: (result) => {
-        setData(result.data);
+    // Timer to fetch search locations using
+    // geocode forward api
+    const timer = setInterval(() => {
+      if (!fetched && search.length > 0) {
+        
+        setFetched(true);
+        axios.get("https://geocode.maps.co/search", {
+          params: {
+            q: search
+          }
+        }).then((res) => {
+          setSuggestions(res.data);
+        });
       }
-    });
-  }, []);
+    }, 505);
+
+    return () => clearInterval(timer);
+  }, [search, fetched]);
   
   // event handler to fetch suggestions based on the text typed on
   // the search bar
   function changeHandler(e) {
     let s = e.target.value.toLowerCase();
-    
-    let list = [];
-    if (data !== null && s !== null && s.length !== 0) {
-      // Go through the entire csv file to check if any row contains the city specified by the search bar
-      // Unfortunately due to loading it might cause a lag spike
-      for (let i=0; i<data.length; i++) {
-        try {
-          let row = data[i];
-          if (row !== null && row.length >= 3) {
-            // Check if the row[2] which is the city column, to see if it includes the search word
-            if (row[2].toLowerCase().includes(s)) {
-              list.push(row);
-              if (list.length >= 5) {
-                break;
-              }
-            }
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      }
-      setSuggestions(list);
+    if (s !== null && s.length > 0) {
+      setFetched(false);
+      setSearch(s);
     } else {
       setSuggestions([]);
+      setSearch('');
     }
   }
 
@@ -86,7 +78,7 @@ export default function Search() {
         <input type='text' onChange={(e) => changeHandler(e)} placeholder="Search"/>
       </div>
       <div className='suggestions'>
-      <Suggestions search={suggestion}/>
+      <Suggestions search={suggestions}/>
       </div>
     </>
   )

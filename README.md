@@ -2,23 +2,23 @@
 
 ![Preview of Live Site](resource/preview_screenshot.png)
 
-This weather app is for my personal portfolio and to train my frontend skills
+This weather app is for my personal portfolio and to train my frontend skills. This is the serverless function which does not use MySQL for the search function and instead uses [GeoCode](https://geocode.maps.co/) as the API.
 
 <u>Technologies it uses:</u>
 - React for the Frontend
 - [Open-Meteo](https://open-meteo.com/) for the Weather API
-- Express for the Backend
-- MySQL for searching the cities and coordinates
-- Docker for containerization of the app
+- [GeoCode](https://geocode.maps.co/) for the search functionality
 
-### Credit
-- [bahar](https://github.com/bahar/WorldCityLocations) for the world cities database
+This version is the chosen live version on netlify, and provides a preview of basically all functionality of the main branch.
+
+<hr>
+
 
 ## Available Scripts
 
 In the project directory, you can run:
 
-### `npm start`
+### `yarn start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
